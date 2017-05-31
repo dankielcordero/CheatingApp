@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "105153847850",
+    "firebase_url": "https://cheating-1acca.firebaseio.com",
+    "project_id": "cheating-1acca",
+    "storage_bucket": "cheating-1acca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105153847850:android:0fba45d4cb484539",
+        "android_client_info": {
+          "package_name": "cz.inovett.cheating"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105153847850-lkd8ehgtqmduvv8gurimp29an49bnlh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7SIG38qUv14gS9Br7AwWgdskakztj4ek"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
