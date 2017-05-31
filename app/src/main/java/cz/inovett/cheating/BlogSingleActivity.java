@@ -1,16 +1,14 @@
 package cz.inovett.cheating;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class BlogSingleActivity extends AppCompatActivity {
@@ -42,7 +40,7 @@ public class BlogSingleActivity extends AppCompatActivity {
 
         //Toast.makeText(BlogSingleActivity.this, post_key, Toast.LENGTH_SHORT).show();
 
-        mDatabase.child(mPost_key).addValueEventListener(new ValueEventListener() {
+       /* mDatabase.child(mPost_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
                 String post_uid = (String) dataSnapshot.child("uid").getValue();
@@ -58,8 +56,17 @@ public class BlogSingleActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
+       mSingleRomeBtn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               mDatabase.child(mPost_key).removeValue();
+               Intent mainIntent = new Intent(BlogSingleActivity.this, MainActivity.class);
+               startActivity(mainIntent);
+           }
+       });
     }
+
 
 
 }
