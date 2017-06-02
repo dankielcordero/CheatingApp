@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -17,15 +18,23 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import static cz.inovett.cheating.R.layout.blog_row;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView blogList;
     private DatabaseReference databaseReference;
+
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabaseUsers;
+    private CardView card_invisible;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +52,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Blog");
+
         mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
         mDatabaseUsers.keepSynced(true);
+        card_invisible = (CardView) findViewById(R.id.card_invisible);
 
         auth = FirebaseAuth.getInstance();
+
 
         blogList = (RecyclerView) findViewById(R.id.blog_list);
         blogList.setHasFixedSize(true);
@@ -70,21 +82,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         /*checkUserExist();*/
+
         auth.addAuthStateListener(mAuthListener);
 
-        FirebaseRecyclerAdapter<Blog, BlogViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
+
+
+
+        final FirebaseRecyclerAdapter<Blog, BlogViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
                 Blog.class,
-                R.layout.blog_row,
+                blog_row,
                 BlogViewHolder.class,
                 databaseReference
 
         ) {
             @Override
-            protected void populateViewHolder(BlogViewHolder viewHolder, Blog model, int position) {
+            protected void populateViewHolder(final BlogViewHolder viewHolder, final Blog model, int position) {
                 final String post_key = getRef(position).getKey();
-                viewHolder.setTitle(model.getTitle());
-                viewHolder.setFullText(model.getText());
 
+                databaseReference.child(post_key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+
+                        String post_uid = (String) dataSnapshot.child("uid").getValue();
+                        if (auth.getCurrentUser().getUid().equals(post_uid)) {
+                            viewHolder.setTitle(model.getTitle());
+                            viewHolder.setFullText(model.getText());
+                        }else{
+                            viewHolder.itemView.setVisibility(View.GONE);
+                        }
+                    }
+
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
 
                 viewHolder.view.setOnClickListener(new View.OnClickListener() {
@@ -96,16 +129,25 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(singleBlogInetnt);
                     }
                 });
+
             }
         };
+
         blogList.setAdapter(firebaseRecyclerAdapter);
+
         super.onStart();
+
+
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         FirebaseUserActions.getInstance().start(getIndexApiAction());
-    }
+        }
+
+
+
+
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -166,11 +208,14 @@ public class MainActivity extends AppCompatActivity {
 
         public void setTitle(String title) {
             TextView post_title = (TextView) view.findViewById(R.id.post_Name);
-            post_title.setText(title);
+                post_title.setText(title);
+
         }
         public void setFullText(String Text) {
             TextView full_text = (TextView) view.findViewById(R.id.post_full_text);
-            full_text.setText(Text);
+                full_text.setText(Text);
+
+
         }
     }
 }
